@@ -108,9 +108,8 @@ add_action('plugins_loaded', 'cackle_bootstrap');
  * Enqueue admin assets only on Cackle admin screens to avoid loading outdated CDN files globally.
  */
 function cackle_admin_enqueue_assets($hook) {
-    $allowed_hooks = array('comments_page_cackle_settings', 'comments_page_cackle');
-
-    if (!in_array($hook, $allowed_hooks, true)) {
+    // Load assets for any Cackle-specific admin screen; hooks vary per parent slug.
+    if (strpos($hook, 'cackle') === false) {
         return;
     }
 
