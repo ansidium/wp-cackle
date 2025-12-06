@@ -116,16 +116,19 @@ function cackle_admin_enqueue_assets($hook) {
     $angular_version = '1.8.3';
     $material_version = '1.2.5';
 
-    wp_enqueue_script('cackle-angular', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular.min.js', array(), $angular_version, true);
-    wp_enqueue_script('cackle-angular-animate', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-animate.min.js', array('cackle-angular'), $angular_version, true);
-    wp_enqueue_script('cackle-angular-aria', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-aria.min.js', array('cackle-angular'), $angular_version, true);
-    wp_enqueue_script('cackle-angular-messages', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-messages.min.js', array('cackle-angular'), $angular_version, true);
-    wp_enqueue_script('cackle-angular-sanitize', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-sanitize.min.js', array('cackle-angular'), $angular_version, true);
+    // Bundle vendor copies inside the plugin to avoid CDN/CSP failures on admin pages.
+    $vendor_base = plugins_url('assets/vendor/', __FILE__);
 
-    wp_enqueue_style('cackle-angular-material', 'https://cdn.jsdelivr.net/npm/angular-material@1.2.5/angular-material.min.css', array(), $material_version);
+    wp_enqueue_script('cackle-angular', $vendor_base . 'angular.min.js', array(), $angular_version, true);
+    wp_enqueue_script('cackle-angular-animate', $vendor_base . 'angular-animate.min.js', array('cackle-angular'), $angular_version, true);
+    wp_enqueue_script('cackle-angular-aria', $vendor_base . 'angular-aria.min.js', array('cackle-angular'), $angular_version, true);
+    wp_enqueue_script('cackle-angular-messages', $vendor_base . 'angular-messages.min.js', array('cackle-angular'), $angular_version, true);
+    wp_enqueue_script('cackle-angular-sanitize', $vendor_base . 'angular-sanitize.min.js', array('cackle-angular'), $angular_version, true);
+
+    wp_enqueue_style('cackle-angular-material', $vendor_base . 'angular-material.min.css', array(), $material_version);
     wp_enqueue_script(
         'cackle-angular-material',
-        'https://cdn.jsdelivr.net/npm/angular-material@1.2.5/angular-material.min.js',
+        $vendor_base . 'angular-material.min.js',
         array('cackle-angular', 'cackle-angular-animate', 'cackle-angular-aria', 'cackle-angular-messages', 'cackle-angular-sanitize'),
         $material_version,
         true
