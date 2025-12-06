@@ -21,6 +21,7 @@ class CackleCounter{
                         break;
                     case 'kk':
                         $lang_for_cackle = 'kk';
+                        break;
                     case 'en':
                         $lang_for_cackle = 'en';
                         break;
@@ -29,6 +30,7 @@ class CackleCounter{
                         break;
                     case 'de':
                         $lang_for_cackle = 'de';
+                        break;
                     case 'lv':
                         $lang_for_cackle = 'lv';
                         break;
@@ -37,6 +39,7 @@ class CackleCounter{
                         break;
                     case 'fr':
                         $lang_for_cackle = 'fr';
+                        break;
                     case 'ro':
                         $lang_for_cackle = 'ro';
                         break;

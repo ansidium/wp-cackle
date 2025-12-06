@@ -193,16 +193,21 @@ class Sync
 
     function comment_status_decoder($comment)
     {
+        $normalized_status = strtolower($comment['status'] ?? 'pending');
 
-        if (strtolower($comment['status']) == "approved") {
+        if ($normalized_status === "approved") {
             $status = 1;
-        } elseif (strtolower($comment['status'] == "pending") || strtolower($comment['status']) == "rejected") {
+        } elseif ($normalized_status === "pending" || $normalized_status === "rejected") {
             $status = 0;
-        } elseif (strtolower($comment['status']) == "spam") {
+        } elseif ($normalized_status === "spam") {
             $status = "spam";
-        } elseif (strtolower($comment['status']) == "deleted") {
+        } elseif ($normalized_status === "deleted") {
             $status = "trash";
+        } else {
+            // Default to pending for unrecognised values to avoid leaking unexpected data.
+            $status = 0;
         }
+
         return $status;
     }
 
@@ -212,8 +217,24 @@ class Sync
 
         $apix = new CackleAPI();
         global $wpdb;
-        $wpdb->query($wpdb->prepare("UPDATE $wpdb->comments SET comment_approved = '$status' WHERE comment_agent = %s", "Cackle:{$comment_id}"));
-        $wpdb->query($wpdb->prepare("UPDATE $wpdb->comments SET comment_content = %s WHERE comment_agent = %s", array($comment_content, "Cackle:{$comment_id}")));
+
+        // Update using prepared statements to avoid any chance of SQL injection from upstream payload.
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE $wpdb->comments SET comment_approved = %s WHERE comment_agent = %s",
+                $status,
+                "Cackle:{$comment_id}"
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE $wpdb->comments SET comment_content = %s WHERE comment_agent = %s",
+                $comment_content,
+                "Cackle:{$comment_id}"
+            )
+        );
+
         if ($modified > $apix->get_last_modified_by_channel($channel, 0)) {
             $apix->set_last_modified_by_channel($channel, $modified);
 

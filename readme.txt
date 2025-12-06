@@ -2,13 +2,14 @@
 Contributors: Denis Golovachev, Cackle, ansidium
 Tags: cackle, comments, social, vk, comments integration
 Requires at least: 6.0
-Tested up to: 6.8.2
-Stable tag: 4.40
+Tested up to: 6.9
+Requires PHP: 8.0
+Stable tag: 4.50
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 == Summary ==
-Легкая интеграция виджетов Cackle в WordPress: комментарии, счетчики и инструменты модерации. Этот репозиторий — поддерживаемый форк оригинального плагина Cackle с исправлениями безопасности и совместимости PHP 8 / WordPress 6.
+Легкая интеграция виджетов Cackle в WordPress: комментарии, счетчики и инструменты модерации. Этот форк поддерживает WordPress 6.9 и PHP 8.5 с исправлениями безопасности и без устаревших API.
 
 == Особенности ==
 - подключение основного виджета комментариев и счетчика Cackle;
@@ -18,8 +19,8 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 - обновленный административный интерфейс без устаревших API.
 
 == Требования ==
-- WordPress 6.0 или новее;
-- PHP 8.0+ (рекомендуется 8.4);
+- WordPress 6.0 или новее (протестировано на 6.9);
+- PHP 8.0+ (рекомендуется 8.5);
 - активная учетная запись на cackle.me с ключами siteId, accountApiKey и siteApiKey.
 
 == Установка ==
@@ -41,6 +42,12 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 - Выводимые данные проходят экранирование для защиты от XSS.
 
 == Обновления ==
+= 4.50 =
+- Поддержка WordPress 6.9 и PHP 8.5; задекларированы требования PHP в заголовках плагина.
+- Админ-скрипты переведены на актуальные AngularJS 1.8.3 + Angular Material 1.2.5 и загружаются только на страницах плагина.
+- Ужесточены права доступа к настройкам (только `manage_options`), исправлены подготовленные запросы и обработка ошибок API.
+- Исправлен подсчет языков виджета счетчика (отсутствующие `break`) и возврат шаблона комментариев по умолчанию, если Cackle не настроен.
+
 = 4.40 =
 - Совместимость с WordPress 6.8.2 и PHP 8.4.
 - Перевод HTTP-запросов на HTTPS и WordPress HTTP API.

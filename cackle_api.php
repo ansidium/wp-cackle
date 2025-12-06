@@ -48,11 +48,18 @@ class CackleAPI
     }
 
     function get_comments($criteria, $cackle_last, $post_id, $cackle_page = 0){
+        $host = '';
+
         if ($criteria == 'last_comment') {
             $host = $this->get_url . "&commentId=" . $cackle_last . "&size=100&chan=" . $post_id;
         }
         if ($criteria == 'last_modified') {
             $host = $this->get_url . "&modified=" . $cackle_last . "&page=" . $cackle_page . "&size=100&chan=" . $post_id;
+        }
+
+        if ($host === '') {
+            $this->last_error = 'Unsupported criteria';
+            return null;
         }
 
         $response = wp_remote_get(

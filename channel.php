@@ -4,7 +4,7 @@ class ChannelHandler{
 
     public static function init() {
         global $wpdb, $cackle_api;
-        if(get_option('cackle_sync') == 1){
+        if((int) get_option('cackle_sync') === 1){
             if (version_compare(get_bloginfo('version'), '2.9', '>=')) {
                 $chans=range(1, 100);
                 $now=time()*1000;
@@ -57,6 +57,10 @@ class ChannelHandler{
 //                                $wpdb->query($sql);
 //                            }
                               $posts_update = get_option('cackle_posts_update');
+                              if (!is_object($posts_update)) {
+                                  $posts_update = new stdClass();
+                              }
+                              // Mark channel as needing refresh; stored as stdClass for compactness.
                               $posts_update->$post_id = 'm';
                               update_option('cackle_posts_update', $posts_update);
                         }

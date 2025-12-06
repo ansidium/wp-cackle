@@ -1,5 +1,4 @@
-<!-- Angular Material Dependencies -->
-
+<!-- Admin UI styling kept minimal; heavy assets are enqueued via cackle_admin_enqueue_assets() -->
 <style>
     body {
         font-size: 1rem;
@@ -50,34 +49,14 @@
         margin-right: 0px !important;
     }
 
-
 </style>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-messages.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-sanitize.js"></script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
 
 <?php
-
-wp_enqueue_style('dashboard_style', 'https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css');
-
-
-wp_enqueue_script('dashboard_script6', plugins_url('cackle_min_v1.js', __FILE__));
-
-//wp_enqueue_script('dashboard_script1', plugins_url('/cackle-admin/dev/settings-module/index.js', __FILE__));
-//wp_enqueue_script('dashboard_script2', plugins_url('/cackle-admin/dev/settings-module/controllers/index.js', __FILE__));
-//wp_enqueue_script('dashboard_script3', plugins_url('/cackle-admin/dev/settings-module/controllers/settings.ctrl.js', __FILE__));
-//wp_enqueue_script('dashboard_script4', plugins_url('/cackle-admin/dev/settings-module/services/index.js', __FILE__));
-//wp_enqueue_script('dashboard_script5', plugins_url('/cackle-admin/dev/settings-module/services/cackle_api.js', __FILE__));
-//wp_enqueue_script('dashboard_script6', plugins_url('/cackle-admin/dev/app.js', __FILE__));
+// Scripts/styles are registered in cackle_admin_enqueue_assets(). Only localization remains here to avoid duplicated loads.
 
 
 
-wp_localize_script('dashboard_script6', 'cackle_locale', array(
+wp_localize_script('cackle-admin-app', 'cackle_locale', array(
     'Cackle plugin installation' => __('Cackle plugin installation', 'cackle'),
     'Check status' => __('Check status', 'cackle'),
     'Export comments' => __('Export comments', 'cackle'),
@@ -145,7 +124,8 @@ $settings = array(
     'curl_exist_error' => false,
     'curl_openbase_error' => false,
     'curl_safemode_error' => false,
-    'php_error' => version_compare(PHP_VERSION, '7.4.0', '<'),
+    // Flag red when server PHP version is below the supported floor.
+    'php_error' => version_compare(PHP_VERSION, '8.0.0', '<'),
 );
 
 $status = array(
@@ -156,7 +136,7 @@ $status = array(
 );
 
 wp_localize_script(
-    'dashboard_script6',
+    'cackle-admin-app',
     'cackle_admin',
     array(
         'settings' => $settings,

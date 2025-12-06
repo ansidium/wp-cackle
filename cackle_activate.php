@@ -5,15 +5,17 @@ function cackle_activate() {
 }
 
 function cackle_enabled() {
-    if (get_option('cackle_apiId') && get_option('cackle_siteApiKey') && get_option('cackle_accountApiKey')) {
-        return true;
-    }
+    // Treat missing options as a hard false to avoid truthy/null confusion in PHP 8.5.
+    return (bool) (get_option('cackle_apiId') && get_option('cackle_siteApiKey') && get_option('cackle_accountApiKey'));
 }
 
 function cackle_activated() {
-    if (!empty($_POST['api_id']) && isset($_POST['site_api_key']) && strlen($_POST['site_api_key']) == 64 && isset($_POST['account_api_key']) && strlen($_POST['account_api_key']) == 64) {
-        return true;
-    }
+    return (
+        !empty($_POST['api_id']) &&
+        isset($_POST['site_api_key'], $_POST['account_api_key']) &&
+        strlen((string) $_POST['site_api_key']) === 64 &&
+        strlen((string) $_POST['account_api_key']) === 64
+    );
 }
 
 function cackle_install() {
@@ -43,4 +45,3 @@ function cackle_plugin_is_current_version(){
     return version_compare($version, CACKLE_VERSION, '=') ? true : false;
 }
 if ( !cackle_plugin_is_current_version() ) cackle_install();
-

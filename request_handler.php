@@ -274,8 +274,13 @@ function cackle_handle_import_prepare(array $payload) {
         update_option('cackle_posts_update', new stdClass());
     }
 
-    $response = json_decode($cackle_api->get_all_channels(100, $page), true);
-    $channels = isset($response['chans']) ? $response['chans'] : array();
+    $raw_channels = $cackle_api->get_all_channels(100, $page);
+    if (!$raw_channels) {
+        cackle_send_error(__('Unable to fetch channel list from Cackle API.', 'cackle'));
+    }
+
+    $response = json_decode($raw_channels, true);
+    $channels = (isset($response['chans']) && is_array($response['chans'])) ? $response['chans'] : array();
 
     $monitor = get_option('cackle_monitor');
     $monitor->post_id = 0;

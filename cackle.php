@@ -3,7 +3,9 @@
  * Plugin Name: Cackle
  * Plugin URI: https://cackle.me
  * Description: This plugin allows your website's audience communicate through social networks like Facebook, Vkontakte, Twitter, and other providers.
- * Version: 4.40
+ * Version: 4.50
+ * Requires PHP: 8.0
+ * Requires at least: 6.0
  * Author: Cackle
  * Author URI: https://cackle.me
  * Text Domain: cackle
@@ -14,7 +16,7 @@ if (!defined('ABSPATH')) {
     exit; // Prevent direct access when running outside of WordPress.
 }
 
-const CACKLE_VERSION = '4.40';
+const CACKLE_VERSION = '4.50';
 
 require_once __DIR__ . '/cackle_api.php';
 require_once __DIR__ . '/sync.php';
@@ -61,7 +63,7 @@ class Cackle_Plugin {
             'edit-comments.php',
             'Cackle settings',
             __('Cackle settings', 'cackle'),
-            'moderate_comments',
+            'manage_options',
             'cackle_settings',
             'cackle_admin'
         );
@@ -85,9 +87,10 @@ class Cackle_Plugin {
         return ($post instanceof WP_Post) ? $post->ID : 0;
     }
 
-    public function override_comments_template() {
+    public function override_comments_template($template = null) {
         if (!cackle_enabled()) {
-            return null;
+            // Fall back to the theme template when the plugin is not configured.
+            return $template;
         }
 
         SyncHandler::init();
@@ -100,6 +103,45 @@ function cackle_bootstrap() {
     new Cackle_Plugin();
 }
 add_action('plugins_loaded', 'cackle_bootstrap');
+
+/**
+ * Enqueue admin assets only on Cackle admin screens to avoid loading outdated CDN files globally.
+ */
+function cackle_admin_enqueue_assets($hook) {
+    $allowed_hooks = array('comments_page_cackle_settings', 'comments_page_cackle');
+
+    if (!in_array($hook, $allowed_hooks, true)) {
+        return;
+    }
+
+    $angular_version = '1.8.3';
+    $material_version = '1.2.5';
+
+    wp_enqueue_script('cackle-angular', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular.min.js', array(), $angular_version, true);
+    wp_enqueue_script('cackle-angular-animate', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-animate.min.js', array('cackle-angular'), $angular_version, true);
+    wp_enqueue_script('cackle-angular-aria', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-aria.min.js', array('cackle-angular'), $angular_version, true);
+    wp_enqueue_script('cackle-angular-messages', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-messages.min.js', array('cackle-angular'), $angular_version, true);
+    wp_enqueue_script('cackle-angular-sanitize', 'https://cdn.jsdelivr.net/npm/angular@1.8.3/angular-sanitize.min.js', array('cackle-angular'), $angular_version, true);
+
+    wp_enqueue_style('cackle-angular-material', 'https://cdn.jsdelivr.net/npm/angular-material@1.2.5/angular-material.min.css', array(), $material_version);
+    wp_enqueue_script(
+        'cackle-angular-material',
+        'https://cdn.jsdelivr.net/npm/angular-material@1.2.5/angular-material.min.js',
+        array('cackle-angular', 'cackle-angular-animate', 'cackle-angular-aria', 'cackle-angular-messages', 'cackle-angular-sanitize'),
+        $material_version,
+        true
+    );
+
+    // The admin bundle relies on Angular + Angular Material and is localized in cackle_admin.php.
+    wp_enqueue_script(
+        'cackle-admin-app',
+        plugins_url('cackle_min_v1.js', __FILE__),
+        array('cackle-angular-material', 'cackle-angular-sanitize'),
+        CACKLE_VERSION,
+        true
+    );
+}
+add_action('admin_enqueue_scripts', 'cackle_admin_enqueue_assets');
 
 function lang_init() {
     load_plugin_textdomain('cackle', false, basename(__DIR__) . '/languages');

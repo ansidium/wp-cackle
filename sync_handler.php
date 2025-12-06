@@ -4,6 +4,8 @@ function channel_timer($cron_time, $id){
     $cackle_api = new CackleAPI();
     global $wpdb;
 
+    $id = (int) $id;
+
     $get_last_time = $wpdb->get_results($wpdb->prepare("
                             SELECT *
                             FROM {$wpdb->prefix}cackle_channel
@@ -15,7 +17,7 @@ function channel_timer($cron_time, $id){
     //$get_last_time = $cackle_api->cackle_get_param("last_time_" . $schedule . "_" . $_SERVER['HTTP_HOST'],0);
     $now = time();
     if (count($get_last_time)==0) {
-        $sql = "INSERT INTO {$wpdb->prefix}cackle_channel (id, time) VALUES (%s,%s) ON DUPLICATE KEY UPDATE time = %s";
+        $sql = "INSERT INTO {$wpdb->prefix}cackle_channel (id, time) VALUES (%d,%d) ON DUPLICATE KEY UPDATE time = %d";
         $sql = $wpdb->prepare($sql,$id,$now,$now);
         $wpdb->query($sql);
         return $now;
@@ -25,7 +27,7 @@ function channel_timer($cron_time, $id){
             return false;
         }
         if ($get_last_time + $cron_time < $now) {
-            $sql = "INSERT INTO {$wpdb->prefix}cackle_channel (id, time) VALUES (%s,%s) ON DUPLICATE KEY UPDATE time = %s";
+            $sql = "INSERT INTO {$wpdb->prefix}cackle_channel (id, time) VALUES (%d,%d) ON DUPLICATE KEY UPDATE time = %d";
             $sql = $wpdb->prepare($sql,$id,$now,$now);
             $wpdb->query($sql);
             return $cron_time;
